@@ -2,6 +2,7 @@ from telebot import TeleBot
 from db_connection import get_list_of_columns, list_of_vacancies, \
     show_selected_vacancies, serialize, write_new_cv
 from bot_code import code
+# import re
 
 bot = TeleBot(code)
 
@@ -11,7 +12,7 @@ def start(message):
 
     bot.reply_to(message, 'commands:\n\n'
                           '/vacancies\n\n'
-                          '/choose_vacancy #vacancy name#\n\n'
+                          '/look_at_vacancy #vacancy name#\n\n'
                           '/apply_vacancy #vacancy_name#\n\n')
 
 
@@ -20,11 +21,10 @@ def get_vacancies(message):
     bot.reply_to(message, f'{list_of_vacancies()}')
 
 
-@bot.message_handler(commands=['choose_vacancy'])
-def choose_vacancy(message):
-    print(message.text[16:])
+@bot.message_handler(commands=['look_at_vacancy'])
+def look_at_vacancy(message):
     bot.reply_to(
-        message, (serialize(show_selected_vacancies(message.text[16:]))))
+        message, (serialize(show_selected_vacancies(message.text[17:]))))
 
 
 @bot.message_handler(commands=['apply_vacancy'])
@@ -35,6 +35,7 @@ def apply_vacancy(message, index_saver=0, temp=None):
     if index_saver == 0:
         # validation of vacancy
         if message.text[15:] in list_of_vacancies():
+            temp['user_id'] = message.from_user.id
             temp[list_of_columns[0]] = message.text[15:]
             index_saver += 1
             msg = bot.reply_to(message, f'{list_of_columns[index_saver]}: ')
