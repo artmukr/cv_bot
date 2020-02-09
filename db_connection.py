@@ -84,10 +84,27 @@ def update_columns(columns):
 
 # update vacancy requirements
 def update_vacancy_requirements(vacancy_name, vacancy_field, new_data):
-    print(vacancy_name, vacancy_field, new_data)
+    table.update_one({'vacancy description': vacancy_name},
+                     {'$set': {vacancy_field: new_data}}, upsert=False)
 
-# update_columns("vacancy, first_name, last_name, phone_number, education, "
-#                "experience, languages, achievements")
+
+def opened_vacancies():
+    return ([a.get('opened_vacancies') for a in table.find(
+        {'_id': ObjectId("5e408dfe5cd5be458777b9a7")})][0])
+
+
+def open_vacancy_db(vacancy_name):
+    table.update({'_id': ObjectId("5e408dfe5cd5be458777b9a7")},
+                 {'$push': {'opened_vacancies': vacancy_name}})
+    return opened_vacancies()
+
+
+def close_vacancy_db(vacancy_name):
+    table.update({'_id': ObjectId("5e408dfe5cd5be458777b9a7")},
+                 {'$pull': {'opened_vacancies': vacancy_name}})
+    return opened_vacancies()
+
+# print(close_vacancy_db('python developer'))
 # if __name__ == '__main__':
 #     # x = table.delete_many({})
 #     db.vacancies.insert_many([
