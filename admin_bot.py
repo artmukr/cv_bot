@@ -4,7 +4,7 @@ from db_connection \
     import list_of_vacancies, serialize, show_selected_vacancies, \
     update_columns, get_list_of_columns, update_vacancy_requirements, \
     show_columns_of_vacancy, opened_vacancies, open_vacancy_db, \
-    close_vacancy_db
+    close_vacancy_db, show_selected_cvs
 
 bot = TeleBot(admin_code)
 
@@ -19,8 +19,10 @@ def start(message):
                           'separated by comma#\n\n'
                           '/update_vacancy  #you can exit from command \n'
                           'with key-word "exit"\n\n'
-                          '/open_vacancy #vacancy name\n\n,'
-                          '/close_vacancy #vacancy name\n\n')
+                          '/open_vacancy #vacancy name\n\n'
+                          '/close_vacancy #vacancy name\n\n'
+                          '/show_all #vacancy name - shows all applicants\n\n'
+                          '/show_one_by_one #vacancy name\n\n')
 
 
 @bot.message_handler(commands=['vacancies'])
@@ -106,6 +108,44 @@ def close_vacancy(message):
         bot.reply_to(message, str(close_vacancy_db(vacancy_name)))
     else:
         bot.reply_to(message, 'this vacancy was not opened')
+
+
+@bot.message_handler(commands=['show_all'])
+def show_all(message):
+    vacancy_name = message.text[10:]
+    if vacancy_name in list_of_vacancies():
+        bot.reply_to(message, '\n'.join(show_selected_cvs(vacancy_name)))
+    else:
+        bot.reply_to(message, 'vacancy does not exists')
+
+
+@bot.message_handler(commands=['show_one_by_one'])
+def show_one_by_one(message):
+    vacancy_name = message.text[17:]
+    if vacancy_name in list_of_vacancies():
+        msg = bot.reply_to(message, 'send any message to look at next cv')
+        bot.register_next_step_handler(msg, mover, vacancy_name)
+    else:
+        bot.reply_to(message, 'vacancy does not exists')
+
+
+def mover(message, vacancy_name, i=0):
+    if i < len(show_selected_cvs(vacancy_name)) - 1:
+        msg = bot.reply_to(message, show_selected_cvs(vacancy_name)[i])
+        i += 1
+        bot.register_next_step_handler(msg, mover, vacancy_name, i)
+    else:
+        bot.reply_to(message, 'list is already empty')
+
+
+@bot.message_handler(commands=['show_selected'])
+def show_selected(message):
+    pass
+
+
+@bot.message_handler(commands=['delete_by_id'])
+def delete_by_id(message):
+    pass
 
 
 if __name__ == '__main__':

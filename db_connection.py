@@ -52,7 +52,7 @@ def write_new_cv(cv):
     return 'done, we will write to you later'
 
 
-# returns list of turned-on vacancies
+# returns list of  vacancies with requirements
 def list_of_vacancies():
     vacancies = []
     for vacancy in table.find():
@@ -103,6 +103,25 @@ def close_vacancy_db(vacancy_name):
     table.update({'_id': ObjectId("5e408dfe5cd5be458777b9a7")},
                  {'$pull': {'opened_vacancies': vacancy_name}})
     return opened_vacancies()
+
+
+def show_selected_cvs(vacancy):
+    output_list = []
+    for applicant in table.find({'vacancy': vacancy}):
+        output_list.append(support_prev(applicant))
+    return output_list
+
+
+# supports show_selected_cvs
+def support_prev(data):
+    out_str = ''
+    for col in data.items():
+        out_str = f'{out_str}\n{col}'
+    return out_str
+
+
+#
+# print(show_selected_cvs('python developer'))
 
 # print(close_vacancy_db('python developer'))
 # if __name__ == '__main__':
