@@ -2,7 +2,7 @@ from telebot import TeleBot
 from db_connection import get_list_of_columns, list_of_vacancies, \
     show_selected_vacancies, serialize, write_new_cv, opened_vacancies
 from bot_code import code
-
+import requests
 
 bot = TeleBot(code)
 

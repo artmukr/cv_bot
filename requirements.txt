@@ -1,3 +1,9 @@
+requests==2.22.0
+flask==1.1.1
+flask-PyMongo==2.3.0
+flask-restful==0.3.8
 pytelegrambotapi==3.6.7
 pymongo==3.10.1
+
+
 

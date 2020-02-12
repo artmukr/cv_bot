@@ -6,25 +6,6 @@ db = client.mydb
 table = db.vacancies
 
 
-developer_vacancy = {'vacancy description': 'python developer',
-                     'education': 'high, beetroot is advantage',
-                     'experience': '2 years',
-                     'languages': ['portuguese', 'english', 'spanish']
-                     }
-
-senior_accounted = {'vacancy description': 'senior accountant',
-                    'education': 'MAUP, only Maup',
-                    'experience': '1.5 years',
-                    'languages': 'english'
-                    }
-
-office_manager = {'vacancy description': 'office manager',
-                  'education': 'Shevchenko Univercity',
-                  'experience': '10 years',
-                  'languages': 'english'
-                  }
-
-
 # shows vacancy descriptions
 def show_selected_vacancies(vacancy):
     return [a for a in table.find({'vacancy description': vacancy})]
@@ -88,23 +69,27 @@ def update_vacancy_requirements(vacancy_name, vacancy_field, new_data):
                      {'$set': {vacancy_field: new_data}}, upsert=False)
 
 
+# returns vacancies with status 'open'
 def opened_vacancies():
     return ([a.get('opened_vacancies') for a in table.find(
         {'_id': ObjectId("5e408dfe5cd5be458777b9a7")})][0])
 
 
+# opens closed vacancy
 def open_vacancy_db(vacancy_name):
     table.update({'_id': ObjectId("5e408dfe5cd5be458777b9a7")},
                  {'$push': {'opened_vacancies': vacancy_name}})
     return opened_vacancies()
 
 
+# close opened vacancy
 def close_vacancy_db(vacancy_name):
     table.update({'_id': ObjectId("5e408dfe5cd5be458777b9a7")},
                  {'$pull': {'opened_vacancies': vacancy_name}})
     return opened_vacancies()
 
 
+# returns cv`s of current vacancy
 def show_selected_cvs(vacancy):
     output_list = []
     for applicant in table.find({'vacancy': vacancy}):
@@ -119,13 +104,3 @@ def support_prev(data):
         out_str = f'{out_str}\n{col}'
     return out_str
 
-
-#
-# print(show_selected_cvs('python developer'))
-
-# print(close_vacancy_db('python developer'))
-# if __name__ == '__main__':
-#     # x = table.delete_many({})
-#     db.vacancies.insert_many([
-#         developer_vacancy, senior_accounted, office_manager])
-# write_list_of_columns(list_of_columns)

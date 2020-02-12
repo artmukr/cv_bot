@@ -38,10 +38,11 @@ def look_at_vacancy(message):
 
 @bot.message_handler(commands=['update_list_of_columns'])
 def update_list_of_columns(message):
-    if not message.text[24:]:
+    columns = message.text[24:]
+    if not columns:
         bot.reply_to(message, 'You should write some columns. Try again.')
     else:
-        update_columns(message.text[24:])
+        update_columns(columns)
         bot.reply_to(
             message, f'list of columns in database is :'
                      f'\n{get_list_of_columns()}')
