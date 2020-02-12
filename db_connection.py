@@ -1,9 +1,5 @@
 from bson import ObjectId
-from pymongo import MongoClient
-
-client = MongoClient('localhost')
-db = client.mydb
-table = db.vacancies
+from settings import table
 
 
 # shows vacancy descriptions
@@ -29,7 +25,7 @@ def serialize(vacancies):
 
 # writes employer`s cv to database
 def write_new_cv(cv):
-    db.vacancies.insert(cv)
+    table.insert(cv)
     return 'done, we will write to you later'
 
 
@@ -45,7 +41,7 @@ def list_of_vacancies():
 
 # write`s to database list of switched columns, that fills in by employer
 def write_list_of_columns(columns):
-    db.vacancies.insert({'list_of_columns': columns})
+    table.insert({'list_of_columns': columns})
     return 'columns was written'
 
 
