@@ -1,53 +1,43 @@
 import requests
-import json
 
 path = 'http://localhost:5000'
 
 
-def show_selected_vacancies(vacancy_name):
+def show_selected_vacancies(vacancy_name: str) -> str:
     str_list = requests.get(
-        f'{path}/show_selected_vacancies?filter={vacancy_name}').text[1:-1]
-    return str_list.replace("'", "").split(', ')
+        f'{path}/show_selected_vacancies?filter={vacancy_name}').text
+    return str_list
 
 
-def show_columns_of_vacancy(vacancy_name):
+def show_columns_of_vacancy(vacancy_name: str) -> str:
     str_list = requests.get(
         f'{path}/show_columns_of_vacancy?filter={vacancy_name}').text[1:-1]
     return str_list.replace("'", "").split(', ')
 
 
-def serialize(vacancies):
-    st = []
-    for el in vacancies:
-        st = str(st) + f"vacancy description -- {el['vacancy description']} " \
-             f"\n\n education -- {el['education']}\n\n experience -- " \
-             f"{el['experience']}\n\n languages -- {el['languages']}\n\n\n\n"
-    return st[2:]
-
-
 # testing needed
-def write_new_cv(cv):
-    return requests.post(f'{path}/apply_vacancy', data=json.dumps(cv))
+def write_new_cv(cv: dict) -> str:
+    return requests.post(f'{path}/apply_vacancy', data=cv).text
 
 
-def list_of_vacancies():
+def list_of_vacancies() -> str:
     str_list = requests.get(f'{path}/vacancies').text[1:-1]
     return str_list.replace("'", "").split(', ')
 
 
-def write_list_of_columns(columns):
+def write_list_of_columns(columns: list) -> str:
     columns = ', '.join(columns)
     return requests.post(
         f'{path}/write_list_of_columns?data={columns}', columns=columns).text
 
 
-def get_list_of_columns():
+def get_list_of_columns() -> str:
     columns = requests.get(
         f'{path}/get_list_of_columns').text[1:-1].replace("'", "").split(', ')
     return columns
 
 
-def update_columns(columns):
+def update_columns(columns: dict) -> str:
     columns = str(columns)
     columns = requests.patch(
         f'{path}/update_list_of_columns?columns={columns}'
@@ -56,25 +46,26 @@ def update_columns(columns):
     return columns
 
 
-def update_vacancy_requirements(vacancy_name, vacancy_field, new_data):
+def update_vacancy_requirements(
+        vacancy_name: str, vacancy_field: str, new_data: str) -> str:
     data = f'{vacancy_name}, {vacancy_field}, {new_data})'
     return requests.patch(f'{path}/update_vacancy?data={data}').text
 
 
-def opened_vacancies():
+def opened_vacancies() -> str:
     vacancies = requests.get(
         f'{path}/opened_vacancies').text[1:-1].replace("'", "").split(', ')
     return vacancies
 
 
-def open_vacancy_db(vacancy_name):
+def open_vacancy_db(vacancy_name: str) -> list:
     vacancies = requests.patch(
         f'{path}/open_vacancy?'
         f'vacancy_name={vacancy_name}').text[1:-1].replace("'", "").split(', ')
     return vacancies
 
 
-def close_vacancy_db(vacancy_name):
+def close_vacancy_db(vacancy_name: str) -> list:
     vacancies = requests.patch(
         f'{path}/close_vacancy'
         f'?vacancy_name={vacancy_name}').text[1:-1].replace(
@@ -82,12 +73,15 @@ def close_vacancy_db(vacancy_name):
     return vacancies
 
 
-def show_selected_cvs(vacancy_name):
+def show_selected_cvs(vacancy_name: str) -> str:
     cvs = requests.get(
         f'{path}/show_all?vacancy_name={vacancy_name}').text
     return cvs
 
 
-def delete_user(user_id):
+def delete_user(user_id: str) -> str:
     return requests.delete(f'{path}/delete_user?user_id={user_id}').text
 
+
+def show_cvs(ids: str) -> str:
+    return requests.get(f'{path}/show_cvs?ids={ids}').text

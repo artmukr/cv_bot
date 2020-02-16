@@ -6,7 +6,6 @@ from pymongo import MongoClient
 
 
 app = Flask(__name__)
-# app.config['MONGO_URI'] = 'mongodb:///localhost:27017/vacancies'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 api = Api(app)

@@ -5,7 +5,7 @@ from db_connection \
 	update_columns, get_list_of_columns, update_vacancy_requirements, \
 	show_columns_of_vacancy, opened_vacancies, open_vacancy_db, \
 	close_vacancy_db, show_selected_cvs, write_new_cv, write_list_of_columns, \
-	delete_user
+	delete_user, show_cvs
 
 
 @app.route('/vacancies', methods=['GET'])
@@ -24,8 +24,9 @@ def opened():
 
 
 @app.route('/apply_vacancy', methods=['POST'])
-def apply_vacancy(temp):
-	return write_new_cv(json.loads(temp))
+def apply_vacancy():
+	temp = json.loads(request.data.decode('utf-8'))
+	return write_new_cv(temp)
 
 
 @app.route('/get_list_of_columns', methods=['GET'])
@@ -98,3 +99,9 @@ def show_one_by_one(vacancy):
 def delete_user_by_id():
 	user_id = request.args.get('user_id')
 	return delete_user(user_id)
+
+
+@app.route('/show_cvs', methods=['GET'])
+def show_cvs_route():
+	ids = request.args.get('ids')
+	return show_cvs(ids)

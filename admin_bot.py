@@ -4,7 +4,7 @@ from db_connection \
     import list_of_vacancies, serialize, show_selected_vacancies, \
     update_columns, get_list_of_columns, update_vacancy_requirements, \
     show_columns_of_vacancy, opened_vacancies, open_vacancy_db, \
-    close_vacancy_db, show_selected_cvs
+    close_vacancy_db, show_selected_cvs, delete_user, show_cvs
 
 bot = TeleBot(admin_code)
 
@@ -12,17 +12,42 @@ bot = TeleBot(admin_code)
 @bot.message_handler(commands=['start', 'help'])
 def start(message):
 
-    bot.reply_to(message, 'commands:\n\n'
-                          '/vacancies\n\n'
-                          '/look_at_vacancy  #vacancy name#\n\n'
-                          '/update_list_of_columns  #list of columns, '
-                          'separated by comma#\n\n'
-                          '/update_vacancy  #you can exit from command \n'
-                          'with key-word "exit"\n\n'
-                          '/open_vacancy #vacancy name\n\n'
-                          '/close_vacancy #vacancy name\n\n'
-                          '/show_all #vacancy name - shows all applicants\n\n'
-                          '/show_one_by_one #vacancy name\n\n')
+    bot.reply_to(message, '_________________________commands:'
+                          '_________________________\n\n'
+                          '/vacancies  ___________________'
+                          'returns list of all opened '
+                          'vacancies\n\n'
+                          '/look_at_vacancy  <vacancy name>'
+                          ' _____returns specific vacancy\n\n'
+                          '/update_list_of_columns  <list of columns, '
+                          'separated by comma with space>'
+                          '   _____________________________'
+                          'replaces list of columns'
+                          '\n\n'
+                          '/update_vacancy  _______changes vacancy field, '
+                          'you can exit from\n'
+                          '____________________________________ '
+                          'command with key-word "exit"\n\n'
+                          '/open_vacancy <vacancy name>  _________________'
+                          'opens vacancy\n\n'
+                          '/close_vacancy <vacancy name>  _________________'
+                          'closes vacancy'
+                          '\n\n'
+                          '/show_all <vacancy name> __________________'
+                          'shows all applicants'
+                          '\n\n'
+                          '/show_one_by_one <vacancy name> ____________'
+                          'returns selected\n'
+                          ' _______________'
+                          'vacancies one-by-one, you can exit with word exit'
+                          '\n\n'
+                          '/delete_by_id  <user_id> ________________deletes '
+                          'user`s cv`s by id\n\n'
+                          '/show_selected  <first_vacancy_id> '
+                          '<second_vacancy_id>\n   ______________returns 2 '
+                          'selected vacancies, needed to copy and\n '
+                          '_______________________paste 2 selected _id`s, '
+                          'separated by space')
 
 
 @bot.message_handler(commands=['vacancies'])
@@ -30,10 +55,14 @@ def get_vacancies(message):
     bot.reply_to(message, f'{list_of_vacancies()}')
 
 
-@bot.message_handler(commands=['look_at_vacancy'])
+@bot.message_handler(commands=['look_at_vacancy'],)
 def look_at_vacancy(message):
-    bot.reply_to(
-        message, (serialize(show_selected_vacancies(message.text[17:]))))
+    vacancy_description = message.text[17:]
+    if vacancy_description in list_of_vacancies():
+        bot.reply_to(
+            message, (serialize(show_selected_vacancies(vacancy_description))))
+    else:
+        bot.reply_to(message, 'check your vacancy')
 
 
 @bot.message_handler(commands=['update_list_of_columns'])
@@ -78,7 +107,7 @@ def get_v_field(message, *vacancy_name):
         bot.reply_to(message, 'you had left this scenario')
     else:
         msg = bot.reply_to(message, 'this field does not exist, enter again :')
-        bot.register_next_step_handler(msg, get_v_field)
+        bot.register_next_step_handler(msg, get_v_field, vacancy_name)
 
 
 def get_v_value(message, *vacancy_name):
@@ -133,22 +162,31 @@ def show_one_by_one(message):
 def mover(message, vacancy_name, i=0):
     list_vacancies = show_selected_cvs(vacancy_name).split('\n ')[1:]
     if i < len(list_vacancies):
-        msg = bot.reply_to(message, list_vacancies[i])
-        i += 1
-        bot.register_next_step_handler(msg, mover, vacancy_name, i)
+        if message.text == 'exit':
+            bot.reply_to(message, 'you had left this scenario')
+        else:
+            msg = bot.reply_to(message, f'send any message to look '
+                                        f'at next cv:\n{list_vacancies[i]}')
+            i += 1
+            bot.register_next_step_handler(msg, mover, vacancy_name, i)
     else:
         bot.reply_to(message, 'list is already empty')
 
 
 @bot.message_handler(commands=['show_selected'])
 def show_selected(message):
-    pass
+    if len(message.text[15:].split(' ')) == 2:
+        cv_ids = message.text[15:]
+        bot.reply_to(message, show_cvs(cv_ids))
+    else:
+        bot.reply_to(message, 'you should insert only 2 cv`s ids, '
+                              'separated by space. Try again.')
 
 
 @bot.message_handler(commands=['delete_by_id'])
 def delete_by_id(message):
     user_id = message.text[14:]
-    # if user_id in
+    bot.reply_to(message, delete_user(user_id))
 
 
 if __name__ == '__main__':
