@@ -5,7 +5,12 @@ from db_connection \
 	update_columns, get_list_of_columns, update_vacancy_requirements, \
 	show_columns_of_vacancy, opened_vacancies, open_vacancy_db, \
 	close_vacancy_db, show_selected_cvs, write_new_cv, write_list_of_columns, \
-	delete_user, show_cvs
+	delete_user, show_cvs, get_admin
+
+
+@app.route('/admin_id', methods=['GET'])
+def admin():
+	return get_admin()
 
 
 @app.route('/vacancies', methods=['GET'])
@@ -42,13 +47,13 @@ def show_col_of_vac():
 
 @app.route('/write_list_of_columns', methods=['POST'])
 def write_columns():
-	columns = request.args.get('columns')
+	columns = request.data.decode('utf-8')
 	return write_list_of_columns(columns)
 
 
 @app.route('/update_list_of_columns', methods=['PATCH'])
 def update_list_of_columns():
-	columns = request.args.get('columns')[1:-1].replace("'", "").split(', ')
+	columns = request.data.decode('utf-8')[1:-1].replace("'", "").split(', ')
 	return str(update_columns(columns))
 
 
@@ -60,7 +65,7 @@ def show_sel_vacancies():
 
 @app.route('/update_vacancy', methods=['PATCH'])
 def update_vacancy():
-	args = request.args.get('data').split(', ')
+	args = request.data.decode('utf-8').split(', ')
 	vacancy_name = args[0]
 	vacancy_field = args[1]
 	value = args[2]
@@ -74,13 +79,13 @@ def get_opened_vacancies():
 
 @app.route('/open_vacancy', methods=['PATCH'])
 def open_vacancy():
-	vacancy_name = request.args.get('vacancy_name')
+	vacancy_name = request.data.decode('utf-8')
 	return str(open_vacancy_db(vacancy_name))
 
 
 @app.route('/close_vacancy', methods=['PATCH'])
 def close_vacancy():
-	vacancy_name = request.args.get('vacancy_name')
+	vacancy_name = request.data.decode('utf-8')
 	return str(close_vacancy_db(vacancy_name))
 
 

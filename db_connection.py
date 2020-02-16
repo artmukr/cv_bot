@@ -2,6 +2,12 @@ from bson import ObjectId
 from settings import table
 
 
+# get admin`s id
+def get_admin() -> str:
+    return str(table.find_one(
+        {'_id': ObjectId("5e49af12eb686b16c4cd41d6")})['admin_id'])
+
+
 # shows vacancy descriptions
 def show_selected_vacancies(vacancy: str) -> list:
     return [a for a in table.find({'vacancy description': vacancy})]

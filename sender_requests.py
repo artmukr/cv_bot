@@ -3,6 +3,10 @@ import requests
 path = 'http://localhost:5000'
 
 
+def get_admin():
+    return requests.get(f'{path}/admin_id').text
+
+
 def show_selected_vacancies(vacancy_name: str) -> str:
     str_list = requests.get(
         f'{path}/show_selected_vacancies?filter={vacancy_name}').text
@@ -15,7 +19,6 @@ def show_columns_of_vacancy(vacancy_name: str) -> str:
     return str_list.replace("'", "").split(', ')
 
 
-# testing needed
 def write_new_cv(cv: dict) -> str:
     return requests.post(f'{path}/apply_vacancy', data=cv).text
 
@@ -28,7 +31,7 @@ def list_of_vacancies() -> str:
 def write_list_of_columns(columns: list) -> str:
     columns = ', '.join(columns)
     return requests.post(
-        f'{path}/write_list_of_columns?data={columns}', columns=columns).text
+        f'{path}/write_list_of_columns', data=columns).text
 
 
 def get_list_of_columns() -> str:
@@ -40,8 +43,7 @@ def get_list_of_columns() -> str:
 def update_columns(columns: dict) -> str:
     columns = str(columns)
     columns = requests.patch(
-        f'{path}/update_list_of_columns?columns={columns}'
-    ).text[1:-1]
+        f'{path}/update_list_of_columns', data=columns).text[1:-1]
     columns = columns.replace("'", "").split(', ')
     return columns
 
@@ -49,7 +51,7 @@ def update_columns(columns: dict) -> str:
 def update_vacancy_requirements(
         vacancy_name: str, vacancy_field: str, new_data: str) -> str:
     data = f'{vacancy_name}, {vacancy_field}, {new_data})'
-    return requests.patch(f'{path}/update_vacancy?data={data}').text
+    return requests.patch(f'{path}/update_vacancy', data=data).text
 
 
 def opened_vacancies() -> str:
@@ -60,15 +62,15 @@ def opened_vacancies() -> str:
 
 def open_vacancy_db(vacancy_name: str) -> list:
     vacancies = requests.patch(
-        f'{path}/open_vacancy?'
-        f'vacancy_name={vacancy_name}').text[1:-1].replace("'", "").split(', ')
+        f'{path}/open_vacancy',
+        data=vacancy_name).text[1:-1].replace("'", "").split(', ')
     return vacancies
 
 
 def close_vacancy_db(vacancy_name: str) -> list:
     vacancies = requests.patch(
-        f'{path}/close_vacancy'
-        f'?vacancy_name={vacancy_name}').text[1:-1].replace(
+        f'{path}/close_vacancy',
+        data=vacancy_name).text[1:-1].replace(
         "'", "").split(', ')
     return vacancies
 
