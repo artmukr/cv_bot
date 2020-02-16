@@ -17,3 +17,7 @@ table = db.vacancies
 
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
+
+if __name__ == '__main__':
+    from main import *
+    app.run(port=5000)

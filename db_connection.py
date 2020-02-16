@@ -57,12 +57,14 @@ def update_columns(columns):
     table.update_one({'_id': ObjectId("5e3ed670fad73e98c9ec4337")},
                      {'$set': {'list_of_columns': list_of_columns}},
                      upsert=False)
+    return get_list_of_columns()
 
 
 # update vacancy requirements
 def update_vacancy_requirements(vacancy_name, vacancy_field, new_data):
     table.update_one({'vacancy description': vacancy_name},
                      {'$set': {vacancy_field: new_data}}, upsert=False)
+    return serialize(show_selected_vacancies(vacancy_name))
 
 
 # returns vacancies with status 'open'
@@ -73,30 +75,47 @@ def opened_vacancies():
 
 # opens closed vacancy
 def open_vacancy_db(vacancy_name):
-    table.update({'_id': ObjectId("5e408dfe5cd5be458777b9a7")},
-                 {'$push': {'opened_vacancies': vacancy_name}})
-    return opened_vacancies()
+    if vacancy_name not in opened_vacancies():
+        table.update({'_id': ObjectId("5e408dfe5cd5be458777b9a7")},
+                     {'$push': {'opened_vacancies': vacancy_name}})
+        return opened_vacancies()
+    else:
+        return ' vacancy is already opened '
 
 
 # close opened vacancy
 def close_vacancy_db(vacancy_name):
-    table.update({'_id': ObjectId("5e408dfe5cd5be458777b9a7")},
-                 {'$pull': {'opened_vacancies': vacancy_name}})
-    return opened_vacancies()
+    if vacancy_name in opened_vacancies():
+        table.update({'_id': ObjectId("5e408dfe5cd5be458777b9a7")},
+                     {'$pull': {'opened_vacancies': vacancy_name}})
+        return opened_vacancies()
+    else:
+        return ' vacancy was not opened '
 
 
 # returns cv`s of current vacancy
 def show_selected_cvs(vacancy):
-    output_list = []
+    output = ''
     for applicant in table.find({'vacancy': vacancy}):
-        output_list.append(support_prev(applicant))
-    return output_list
+        output = f'{output}\n {support_prev(applicant)}'
+    return output
 
 
 # supports show_selected_cvs
 def support_prev(data):
     out_str = ''
     for col in data.items():
-        out_str = f'{out_str}\n{col}'
+        out_str = f'{out_str}\n{col}'.replace(", ", " -- ")
     return out_str
+
+
+# deletes user`s vacancies by id
+def delete_user(user_id):
+    if table.find_one({'user_id': user_id}) is not None:
+        table.delete_many({'user_id': {'$eq': user_id}})
+        return 'successful'
+    else:
+        return 'user not found'
+
+
 

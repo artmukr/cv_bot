@@ -115,7 +115,7 @@ def close_vacancy(message):
 def show_all(message):
     vacancy_name = message.text[10:]
     if vacancy_name in list_of_vacancies():
-        bot.reply_to(message, '\n'.join(show_selected_cvs(vacancy_name)))
+        bot.reply_to(message, show_selected_cvs(vacancy_name))
     else:
         bot.reply_to(message, 'vacancy does not exists')
 
@@ -131,8 +131,9 @@ def show_one_by_one(message):
 
 
 def mover(message, vacancy_name, i=0):
-    if i < len(show_selected_cvs(vacancy_name)) - 1:
-        msg = bot.reply_to(message, show_selected_cvs(vacancy_name)[i])
+    list_vacancies = show_selected_cvs(vacancy_name).split('\n ')[1:]
+    if i < len(list_vacancies):
+        msg = bot.reply_to(message, list_vacancies[i])
         i += 1
         bot.register_next_step_handler(msg, mover, vacancy_name, i)
     else:
@@ -146,7 +147,8 @@ def show_selected(message):
 
 @bot.message_handler(commands=['delete_by_id'])
 def delete_by_id(message):
-    pass
+    user_id = message.text[14:]
+    # if user_id in
 
 
 if __name__ == '__main__':
