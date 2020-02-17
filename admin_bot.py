@@ -7,11 +7,12 @@ from db_connection \
     close_vacancy_db, show_selected_cvs, delete_user, show_cvs, get_admin
 
 bot = TeleBot(admin_code)
+admin_id = int(get_admin())
 
 
 @bot.message_handler(commands=['start', 'help'])
 def start(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         bot.reply_to(message, '_________________________commands:'
                               '_________________________\n\n'
                               '/vacancies  ___________________'
@@ -55,7 +56,7 @@ def start(message):
 
 @bot.message_handler(commands=['vacancies'])
 def get_vacancies(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         bot.reply_to(message, f'{list_of_vacancies()}')
     else:
         bot.reply_to(message, 'You have no rights')
@@ -63,7 +64,7 @@ def get_vacancies(message):
 
 @bot.message_handler(commands=['look_at_vacancy'],)
 def look_at_vacancy(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         vacancy_description = message.text[17:]
         if vacancy_description in list_of_vacancies():
             bot.reply_to(
@@ -77,7 +78,7 @@ def look_at_vacancy(message):
 
 @bot.message_handler(commands=['update_list_of_columns'])
 def update_list_of_columns(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         columns = message.text[24:]
         if not columns:
             bot.reply_to(message, 'You should write some columns. Try again.')
@@ -92,7 +93,7 @@ def update_list_of_columns(message):
 
 @bot.message_handler(commands=['update_vacancy'])
 def update_vacancy(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         msg = bot.reply_to(message, 'enter vacancy name :')
         bot.register_next_step_handler(msg, get_v_name)
     else:
@@ -100,7 +101,7 @@ def update_vacancy(message):
 
 
 def get_v_name(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         vacancy_name = message.text
         if vacancy_name in list_of_vacancies():
             msg = bot.reply_to(message, 'enter vacancy field to edit :')
@@ -141,7 +142,7 @@ def get_v_value(message, *vacancy_name):
 
 @bot.message_handler(commands=['open_vacancy'])
 def open_vacancy(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         vacancy_name = message.text[14:]
         if vacancy_name in list_of_vacancies() and \
                 vacancy_name not in opened_vacancies():
@@ -155,7 +156,7 @@ def open_vacancy(message):
 
 @bot.message_handler(commands=['close_vacancy'])
 def close_vacancy(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         vacancy_name = message.text[15:]
         if vacancy_name in list_of_vacancies():
             bot.reply_to(message, str(close_vacancy_db(vacancy_name)))
@@ -167,7 +168,7 @@ def close_vacancy(message):
 
 @bot.message_handler(commands=['show_all'])
 def show_all(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         vacancy_name = message.text[10:]
         if vacancy_name in list_of_vacancies():
             bot.reply_to(message, show_selected_cvs(vacancy_name))
@@ -179,7 +180,7 @@ def show_all(message):
 
 @bot.message_handler(commands=['show_one_by_one'])
 def show_one_by_one(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         vacancy_name = message.text[17:]
         if vacancy_name in list_of_vacancies():
             msg = bot.reply_to(message, 'send any message to look at next cv')
@@ -206,7 +207,7 @@ def mover(message, vacancy_name, i=0):
 
 @bot.message_handler(commands=['show_selected'])
 def show_selected(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         if len(message.text[15:].split(' ')) == 2:
             cv_ids = message.text[15:]
             bot.reply_to(message, show_cvs(cv_ids))
@@ -219,7 +220,7 @@ def show_selected(message):
 
 @bot.message_handler(commands=['delete_by_id'])
 def delete_by_id(message):
-    if message.from_user.id == get_admin():
+    if message.from_user.id == admin_id:
         user_id = message.text[14:]
         bot.reply_to(message, delete_user(user_id))
     else:

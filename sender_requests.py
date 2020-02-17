@@ -1,5 +1,5 @@
 import requests
-
+import json
 path = 'http://localhost:5000'
 
 
@@ -20,6 +20,7 @@ def show_columns_of_vacancy(vacancy_name: str) -> str:
 
 
 def write_new_cv(cv: dict) -> str:
+    cv = json.dumps(cv)
     return requests.post(f'{path}/apply_vacancy', data=cv).text
 
 

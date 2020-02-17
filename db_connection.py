@@ -48,7 +48,8 @@ def list_of_vacancies() -> list:
 
 # write`s to database list of switched columns, that fills in by employer
 def write_list_of_columns(columns: str) -> str:
-    table.insert({'list_of_columns': columns})
+    table.update({'_id': ObjectId("5e3ed670fad73e98c9ec433")},
+                 {'$set': {'list_of_columns': columns}}, upsert=False)
     return 'columns was written'
 
 
