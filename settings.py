@@ -15,7 +15,7 @@ db = client.mydb
 table = db.vacancies
 
 logging.basicConfig()
-logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.DEBUG)
 
 if __name__ == '__main__':
     from main import *
